@@ -15,6 +15,15 @@ TINYZZZ_PATH        = 'tinyZZZ.exe'
 TEMP_FILE_PATH      = os.path.join('verify_tmp', 'testfile.hex')
 
 
+ENABLE_GZIP = True 
+ENABLE_LZMA = True 
+ENABLE_LZ4  = True 
+ENABLE_ZSTD = True 
+ENABLE_LPAQ8= True
+ENABLE_ZIP  = True 
+ENABLE_ZIP_LZMA = True 
+
+
 RED_MARK   = '\033[31m'
 GREEN_MARK = '\033[32m'
 YELLOW_MARK= '\033[36m'
@@ -119,65 +128,72 @@ if __name__ == '__main__' :
         if os.path.isfile(orig_file_path) :
             shutil.copy(orig_file_path, TEMP_FILE_PATH)
 
-            # GZIP : tinyZZZ -> offical ------------------------------------------------------------------
-            runTinyZZZ(f'-c --gzip  {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.gz')
-            official_decompress(  f'{TEMP_FILE_PATH}.gz',   TEMP_FILE_PATH)
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+            if ENABLE_GZIP :
+                # GZIP : tinyZZZ -> offical ------------------------------------------------------------------
+                runTinyZZZ(f'-c --gzip  {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.gz')
+                official_decompress(  f'{TEMP_FILE_PATH}.gz',   TEMP_FILE_PATH)
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
             
-            # ZSTD : offical -> tinyZZZ ------------------------------------------------------------------
-            official_compress(       TEMP_FILE_PATH,      f'{TEMP_FILE_PATH}.zst', compress_level=9)
-            runTinyZZZ(f'-d --zstd  {TEMP_FILE_PATH}.zst   {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+            if ENABLE_ZSTD :
+                # ZSTD : offical -> tinyZZZ ------------------------------------------------------------------
+                official_compress(       TEMP_FILE_PATH,      f'{TEMP_FILE_PATH}.zst', compress_level=9)
+                runTinyZZZ(f'-d --zstd  {TEMP_FILE_PATH}.zst   {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
 
-            # LZMA : offical -> tinyZZZ ------------------------------------------------------------------
-            official_compress(       TEMP_FILE_PATH,     f'{TEMP_FILE_PATH}.lzma', compress_level=4)
-            runTinyZZZ(f'-d --lzma  {TEMP_FILE_PATH}.lzma  {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
-            
-            # LZMA : tinyZZZ -> tinyZZZ ------------------------------------------------------------------
-            runTinyZZZ(f'-c --lzma  {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lzma')
-            runTinyZZZ(f'-d --lzma  {TEMP_FILE_PATH}.lzma  {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+            if ENABLE_LZMA :
+                # LZMA : offical -> tinyZZZ ------------------------------------------------------------------
+                official_compress(       TEMP_FILE_PATH,     f'{TEMP_FILE_PATH}.lzma', compress_level=4)
+                runTinyZZZ(f'-d --lzma  {TEMP_FILE_PATH}.lzma  {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                
+                # LZMA : tinyZZZ -> tinyZZZ ------------------------------------------------------------------
+                runTinyZZZ(f'-c --lzma  {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lzma')
+                runTinyZZZ(f'-d --lzma  {TEMP_FILE_PATH}.lzma  {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
 
-            # LZMA : tinyZZZ -> offical ------------------------------------------------------------------
-            official_decompress_LZMA(f'{TEMP_FILE_PATH}.lzma', TEMP_FILE_PATH)
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                # LZMA : tinyZZZ -> offical ------------------------------------------------------------------
+                official_decompress_LZMA(f'{TEMP_FILE_PATH}.lzma', TEMP_FILE_PATH)
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
 
-            # LZ4  : offical -> tinyZZZ ------------------------------------------------------------------
-            official_compress(       TEMP_FILE_PATH,      f'{TEMP_FILE_PATH}.lz4', compress_level=5)
-            runTinyZZZ(f'-d --lz4   {TEMP_FILE_PATH}.lz4   {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
-            
-            # LZ4  : tinyZZZ -> tinyZZZ ------------------------------------------------------------------
-            runTinyZZZ(f'-c --lz4   {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lz4')
-            runTinyZZZ(f'-d --lz4   {TEMP_FILE_PATH}.lz4   {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+            if ENABLE_LZ4 :
+                # LZ4  : offical -> tinyZZZ ------------------------------------------------------------------
+                official_compress(       TEMP_FILE_PATH,      f'{TEMP_FILE_PATH}.lz4', compress_level=5)
+                runTinyZZZ(f'-d --lz4   {TEMP_FILE_PATH}.lz4   {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                
+                # LZ4  : tinyZZZ -> tinyZZZ ------------------------------------------------------------------
+                runTinyZZZ(f'-c --lz4   {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lz4')
+                runTinyZZZ(f'-d --lz4   {TEMP_FILE_PATH}.lz4   {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
 
-            # LZ4  : tinyZZZ -> offical ------------------------------------------------------------------
-            official_decompress(  f'{TEMP_FILE_PATH}.lz4',  TEMP_FILE_PATH)
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                # LZ4  : tinyZZZ -> offical ------------------------------------------------------------------
+                official_decompress(  f'{TEMP_FILE_PATH}.lz4',  TEMP_FILE_PATH)
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
             
-            # LPAQ8: offical -> tinyZZZ ------------------------------------------------------------------
-            official_compress_LPAQ8( TEMP_FILE_PATH,     f'{TEMP_FILE_PATH}.lpaq8', compress_level=3)
-            runTinyZZZ(f'-d --lpaq8 {TEMP_FILE_PATH}.lpaq8 {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
-            
-            # LPAQ8: tinyZZZ -> tinyZZZ ------------------------------------------------------------------
-            runTinyZZZ(f'-c --lpaq8 {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lpaq8')
-            runTinyZZZ(f'-d --lpaq8 {TEMP_FILE_PATH}.lpaq8 {TEMP_FILE_PATH}')
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+            if ENABLE_LPAQ8 :
+                # LPAQ8: offical -> tinyZZZ ------------------------------------------------------------------
+                official_compress_LPAQ8( TEMP_FILE_PATH,     f'{TEMP_FILE_PATH}.lpaq8', compress_level=3)
+                runTinyZZZ(f'-d --lpaq8 {TEMP_FILE_PATH}.lpaq8 {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                
+                # LPAQ8: tinyZZZ -> tinyZZZ ------------------------------------------------------------------
+                runTinyZZZ(f'-c --lpaq8 {TEMP_FILE_PATH}       {TEMP_FILE_PATH}.lpaq8')
+                runTinyZZZ(f'-d --lpaq8 {TEMP_FILE_PATH}.lpaq8 {TEMP_FILE_PATH}')
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
 
-            # LPAQ8: tinyZZZ -> official -----------------------------------------------------------------
-            official_decompress_LPAQ8(f'{TEMP_FILE_PATH}.lpaq8', TEMP_FILE_PATH)
-            assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
+                # LPAQ8: tinyZZZ -> official -----------------------------------------------------------------
+                official_decompress_LPAQ8(f'{TEMP_FILE_PATH}.lpaq8', TEMP_FILE_PATH)
+                assert_file_content_same(orig_file_path,        TEMP_FILE_PATH)
             
-            # ZIP (deflate) : tinyZZZ -> official --------------------------------------------------------
-            runTinyZZZ(f'-c --gzip --zip {TEMP_FILE_PATH}  {TEMP_FILE_PATH}.zip')
-            offical_check_zip(f'{TEMP_FILE_PATH}.zip')
+            if ENABLE_ZIP :
+                # ZIP (deflate) : tinyZZZ -> official --------------------------------------------------------
+                runTinyZZZ(f'-c --gzip --zip {TEMP_FILE_PATH}  {TEMP_FILE_PATH}.zip')
+                offical_check_zip(f'{TEMP_FILE_PATH}.zip')
             
-            # ZIP (LZMA) : tinyZZZ -> official -----------------------------------------------------------
-            runTinyZZZ(f'-c --lzma --zip {TEMP_FILE_PATH}  {TEMP_FILE_PATH}.zip')
-            offical_check_zip(f'{TEMP_FILE_PATH}.zip')
+            if ENABLE_ZIP_LZMA :
+                # ZIP (LZMA) : tinyZZZ -> official -----------------------------------------------------------
+                runTinyZZZ(f'-c --lzma --zip {TEMP_FILE_PATH}  {TEMP_FILE_PATH}.zip')
+                offical_check_zip(f'{TEMP_FILE_PATH}.zip')
     
             print(f'\n{YELLOW_MARK} === {orig_file_path} test passed ===\n {RESET_MARK}')
     
